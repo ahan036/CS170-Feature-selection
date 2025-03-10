@@ -1,9 +1,19 @@
 import numpy as np 
-import urllib.request 
 
-url = 'https://github.com/ahan036/CS170-Feature-selection/blob/main/CS170_Small_Data__49.txt'
-urllib.request.urlretrieve(url, 'CS170_Small_Data_49.txt')
-data = np.loadtxt('CS170_Small_Data_49.txt')
+#how do i read in file :( cant test until i can read it 
+#tried .loadtxt keep getting !doctype error 
+
+def main():
+    select_algo = input("This is Ashley's feature selection project. Which algorithm should we run? 1) Forward Selection /n 2)Backward Elimination /n")
+    if select_algo == '1':
+        #forward_selection(data) 
+    if select_algo == '2':
+        #backward_elimination(data)
+
+
+
+#def forward_selection(data)
+#def backward_elimination(data)
 
 
 #pseudocode from the slides 
