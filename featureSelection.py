@@ -4,7 +4,17 @@ import numpy as np
 #tried .loadtxt keep getting !doctype error 
 
 def main():
-    select_algo = input("This is Ashley's feature selection project. Which algorithm should we run? 1) Forward Selection /n 2)Backward Elimination /n")
+    print("Welcome to Ashley's feature selection algorithm.")
+    file_input = input("Type in the name of the file to test: ")
+    print(file_input)
+    
+    data = np.genfromtxt(file_input)
+    print('This dataset has {} features (not including the class attribute), with {} instances\n'.format(data.shape[1]-1, data.shape[0]))
+
+
+    print('Running nearest neighbor with all {} features, using \"leaving-one-out\" evalutation, I get an accuracy of {}%\n'.format(data.shape[1]-1, leave_one_out_cross_validation(data)))
+
+    select_algo = input("Which algorithm should we run? 1) Forward Selection /n 2)Backward Elimination /n")
     if select_algo == '1':
         #forward_selection(data) 
     if select_algo == '2':
@@ -43,7 +53,7 @@ def main():
 #current_set = the set of features we are selecting 
 #feature_to_add = the feature we might add, we have to test the accuracy first 
 #test our seach
-def leave_one_out_cross_validation(data, current_set, feature_to_add):
+def leave_one_out_cross_validation(data, current_set =None, feature_to_add=None):
     accuracy = np.random.rand() 
     return accuracy
 
@@ -66,3 +76,7 @@ def feature_search(data):
         
         current_set_of_features.append(feature_to_add_at_this_level)
         print(f'On level {i + 1} i added feature {feature_to_add_at_this_level + 1}')
+
+
+if __name__ == "__main__":
+    main()
