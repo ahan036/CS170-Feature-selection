@@ -1,24 +1,34 @@
 import numpy as np 
+import math #euclidian distance 
 
-#how do i read in file :( cant test until i can read it 
-#tried .loadtxt keep getting !doctype error 
+#for running the dataset while testing 
+def dataset(): 
+    dataset = int(input('What dataset do u want large = 1, small = 2'))
+    print(dataset)
+    if dataset == 1: 
+        dataset = 'CS170_Large_Data__87.txt'
+    elif dataset == 2: 
+        dataset = 'CS170_Small_Data__49.txt'
+    else:
+        print ('Defaulting to small dataset')
+        dataset = 'CS170_Small_Data__49.txt' 
+    data = np.loadtxt(dataset)
+    return np.shape(data)[0], np.shape(data)[1], data
 
+#to choose the dataset and method 
 def main():
     print("Welcome to Ashley's feature selection algorithm.")
-    file_input = input("Type in the name of the file to test: ")
-    print(file_input)
-    
-    data = np.genfromtxt(file_input)
-    print('This dataset has {} features (not including the class attribute), with {} instances\n'.format(data.shape[1]-1, data.shape[0]))
-
-
-    print('Running nearest neighbor with all {} features, using \"leaving-one-out\" evalutation, I get an accuracy of {}%\n'.format(data.shape[1]-1, leave_one_out_cross_validation(data)))
-
+    # file_input = input("Type in the name of the file to test: ")
+    # print(file_input)
+    # data = np.genfromtxt(file_input)
     select_algo = input("Which algorithm should we run? 1) Forward Selection /n 2)Backward Elimination /n")
-    if select_algo == '1':
-        #forward_selection(data) 
-    if select_algo == '2':
-        #backward_elimination(data)
+    instances, features, data = dataset()
+    print('This dataset has ' + str(features - 1) + ' features (not including the class attribute), with ' + str(instances) + ' instances.\n')
+    print('Running nearest neighbor with all {} features, using \"leaving-one-out\" evalutation, I get an accuracy of {}%\n'.format(data.shape[1]-1, leave_one_out_cross_validation(data)))
+    # if select_algo == '1':
+    #     forward_selection(data) 
+    # else select_algo == '2':
+    #     backward_elimination(data)
 
 
 
@@ -29,7 +39,8 @@ def main():
 #pseudocode from the slides 
 '''def leave_one_out_cross_validation(data, current_set, feature_to_add):
     number_correctly_classified = 0
-    for i in range(data.shape[0]):
+    #shape tells us the number of rows in our data, basically we are looping for x # of rows 
+    for i in range(data.shape[0]): 
         object_to_classify = data[i, 1:]
         label_object_to_classify = data[i, 0]
         nearest_neighbor_distance = np.inf
@@ -78,5 +89,6 @@ def feature_search(data):
         print(f'On level {i + 1} i added feature {feature_to_add_at_this_level + 1}')
 
 
+#run the main menu 
 if __name__ == "__main__":
     main()
