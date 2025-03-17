@@ -2,6 +2,7 @@ import numpy as np
 import math #euclidian distance 
 
 #for running the dataset while testing 
+#https://www.geeksforgeeks.org/find-the-number-of-rows-and-columns-of-a-given-matrix-using-numpy/
 def dataset(): 
     dataset = int(input('What dataset do u want large = 1, small = 2'))
     print(dataset)
@@ -24,7 +25,13 @@ def main():
     select_algo = input("Which algorithm should we run? 1) Forward Selection /n 2)Backward Elimination /n")
     instances, features, data = dataset()
     print('This dataset has ' + str(features - 1) + ' features (not including the class attribute), with ' + str(instances) + ' instances.\n')
-    print('Running nearest neighbor with all {} features, using \"leaving-one-out\" evalutation, I get an accuracy of {}%\n'.format(data.shape[1]-1, leave_one_out_cross_validation(data)))
+
+    #test to make sure we are considering all features in our test 
+    features = list(range(1, features))
+    print(features)
+    all_features = leave_one_out_cross_validation(data, features, 0)
+    print(all_features)
+    print('Running nearest neighbor with all features, using \"leaving-one-out\" evalutation, I get an accuracy of ' + str(all_features * 100) + '%')
     # if select_algo == '1':
     #     forward_selection(data) 
     # else select_algo == '2':
@@ -37,7 +44,13 @@ def main():
 
 
 #pseudocode from the slides 
-'''def leave_one_out_cross_validation(data, current_set, feature_to_add):
+def leave_one_out_cross_validation(data, current_set, feature_to_add):
+
+    #this is to make sure we add the new feature to our existing set 
+    if (feature_to_add != 0):
+        current_set = current_set.copy() #we need to copy or else we permanently alter this and we cant run the original 
+        current_set.apphend(feature_to_add)
+    
     number_correctly_classified = 0
     #shape tells us the number of rows in our data, basically we are looping for x # of rows 
     for i in range(data.shape[0]): 
@@ -56,17 +69,17 @@ def main():
         
         if label_object_to_classify == nearest_neighbor_label:
             number_correctly_classified += 1
-            
+    
     accuracy = number_correctly_classified / data.shape[0]
-    return accuracy '''
+    return accuracy
 
 #data = our file 
 #current_set = the set of features we are selecting 
 #feature_to_add = the feature we might add, we have to test the accuracy first 
 #test our seach
-def leave_one_out_cross_validation(data, current_set =None, feature_to_add=None):
-    accuracy = np.random.rand() 
-    return accuracy
+# def leave_one_out_cross_validation(data, current_set =None, feature_to_add=None):
+#     accuracy = np.random.rand() 
+#     return accuracy
 
 #more code from the slides : project_2 briefing
 def feature_search(data):
