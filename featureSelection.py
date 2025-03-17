@@ -104,19 +104,18 @@ def forward_selection(data):
     current_set_of_features = []
     solution_set = []
     accuracy = 0
-    for k in range(data.shape[1]):
-        current_set_of_features.append(k)
     for i in range(data.shape[1] - 1):
         print(f'On the {i + 1}th level of the search tree')
-        feature_to_remove_at_this_level = None
+        feature_to_add_at_this_level = None
         best_so_far_accuracy = 0
-        if not set(current_set_of_features).intersection({k}):
-            print(f'consider adding the {k + 1} feature')
-            accuracy = leave_one_out_cross_validation(data, current_set_of_features, k + 1)
-            print('Using feature(s) ' + str(current_set_of_features + [k]) + ' accuracy is ' + str(accuracy * 100) + '%')
-            if accuracy > best_so_far_accuracy:
-                best_so_far_accuracy = accuracy
-                feature_to_add_at_this_level = k
+        for k in range(data.shape[1] - 1):
+            if not set(current_set_of_features).intersection({k}):
+                print(f'consider adding the {k + 1} feature')
+                accuracy = leave_one_out_cross_validation(data, current_set_of_features, k + 1)
+                print('Using feature(s) ' + str(current_set_of_features + [k]) + ' accuracy is ' + str(accuracy * 100) + '%')
+                if accuracy > best_so_far_accuracy:
+                    best_so_far_accuracy = accuracy
+                    feature_to_add_at_this_level = k
         if best_so_far_accuracy >= accuracy:
             accuracy = best_so_far_accuracy
             solution_set.append(feature_to_add_at_this_level)
@@ -129,24 +128,25 @@ def backward_elimination(data):
     current_set_of_features = []
     solution_set = []
     accuracy = 0
+    for k in range(data.shape[1]):
+        current_set_of_features.append(k)
     for i in range(data.shape[1] - 1):
         print(f'On the {i + 1}th level of the search tree')
         feature_to_remove_at_this_level = None
         best_so_far_accuracy = 0
-        for k in range(data.shape[1] - 1):
-            if set(current_set_of_features).intersection({k}):
-                print(f'consider removing the {k + 1} feature')
-                removed_feature = current_set_of_features.copy()
-                removed_feature.remove(k)
-                cross_accuracy = leave_one_out_cross_validation(data, current_set_of_features, -1)
-                print('Removing ' + str(k) + ' in features ' + str(current_set_of_features) + ' accuracy is ' + str(accuracy * 100) + '%')
-                if cross_accuracy > best_so_far_accuracy:
-                    best_so_far_accuracy = cross_accuracy
-                    solution_set = current_set_of_features.copy()
-                    feature_to_remove_at_this_level = k
-            if best_so_far_accuracy >= accuracy:
-                accuracy = best_so_far_accuracy
+        if set(current_set_of_features).intersection({k}):
+            print(f'consider removing the {k + 1} feature')
+            removed_feature = current_set_of_features.copy()
+            removed_feature.remove(k)
+            cross_accuracy = leave_one_out_cross_validation(data, current_set_of_features, -1)
+            print('Removing ' + str(k) + ' in features ' + str(current_set_of_features) + ' accuracy is ' + str(accuracy * 100) + '%')
+            if cross_accuracy > best_so_far_accuracy:
+                best_so_far_accuracy = cross_accuracy
                 solution_set = current_set_of_features.copy()
+                feature_to_remove_at_this_level = k
+        if best_so_far_accuracy >= accuracy:
+            accuracy = best_so_far_accuracy
+            solution_set = current_set_of_features.copy()
         current_set_of_features.remove(feature_to_remove_at_this_level)
         print(f'On level {i + 1} i added feature {feature_to_remove_at_this_level + 1}')
         return solution_set, accuracy
