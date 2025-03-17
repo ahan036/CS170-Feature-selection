@@ -22,7 +22,7 @@ def main():
     # file_input = input("Type in the name of the file to test: ")
     # print(file_input)
     # data = np.genfromtxt(file_input)
-    select_algo = input("Which algorithm should we run? 1) Forward Selection /n 2)Backward Elimination /n")
+    select_algo = int(input("Which algorithm should we run? 1) Forward Selection /n 2)Backward Elimination /n"))
     instances, features, data = dataset()
     print('This dataset has ' + str(features - 1) + ' features (not including the class attribute), with ' + str(instances) + ' instances.\n')
 
@@ -32,24 +32,20 @@ def main():
     all_features = leave_one_out_cross_validation(data, features, 0)
     print(all_features)
     print('Running nearest neighbor with all features, using \"leaving-one-out\" evalutation, I get an accuracy of ' + str(all_features * 100) + '%')
-    # if select_algo == '1':
-    #     forward_selection(data) 
-    # else select_algo == '2':
-    #     backward_elimination(data)
-
-
-
-#def forward_selection(data)
-#def backward_elimination(data)
-
+    if select_algo == 1:
+        subset, accuracy = forward_selection(data)
+    else:
+        subset, accuracy = backward_elimination(data)
+    print('Finished search!! The best feature subset is ' + str(subset) +  ' which has an accuracy of ' + str(accuracy * 100) + '%')
 
 #pseudocode from the slides 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
 
     #this is to make sure we add the new feature to our existing set 
     if (feature_to_add != 0):
-        current_set = current_set.copy() #we need to copy or else we permanently alter this and we cant run the original 
-        current_set.apphend(feature_to_add)
+        #we need to copy or else we permanently alter current_set and we cant run the original 
+        current_set = current_set.copy() 
+        current_set.append(feature_to_add)
     
     number_correctly_classified = 0
     #shape tells us the number of rows in our data, basically we are looping for x # of rows 
@@ -82,13 +78,55 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
 #     return accuracy
 
 #more code from the slides : project_2 briefing
-def feature_search(data):
+#this will turn into our forward and backward search 
+# def feature_search(data):
+#     current_set_of_features = []
+#     for i in range(data.shape[1] - 1):
+#         print(f'On the {i + 1}th level of the search tree')
+#         feature_to_add_at_this_level = None
+#         best_so_far_accuracy = 0
+#         for k in range(data.shape[1] - 1):
+#             if not set(current_set_of_features).intersection({k}):
+#                 print(f'consider adding the {k + 1} feature')
+#                 accuracy = leave_one_out_cross_validation(data, current_set_of_features, k + 1)
+                
+#                 if accuracy > best_so_far_accuracy:
+#                     best_so_far_accuracy = accuracy
+#                     feature_to_add_at_this_level = k
+        
+#         current_set_of_features.append(feature_to_add_at_this_level)
+#         print(f'On level {i + 1} i added feature {feature_to_add_at_this_level + 1}')
+
+def forward_selection(data):
+    current_set_of_features = []
+    solution_set = []
+    accuracy = 0
+    for i in range(data.shape[1] - 1):
+        print(f'On the {i + 1}th level of the search tree')
+        feature_to_add_at_this_level = None
+        best_so_far_accuracy = 0
+        for k in range(data.shape[1] - 1):
+            if not set(current_set_of_features).intersection({k}):
+                print(f'consider adding the {k + 1} feature')
+                accuracy = leave_one_out_cross_validation(data, current_set_of_features, k + 1)
+                
+                if accuracy > best_so_far_accuracy:
+                    best_so_far_accuracy = accuracy
+                    feature_to_add_at_this_level = k
+        if best_so_far_accuracy >= accuracy:
+            accuracy = best_so_far_accuracy
+            solution_set.append(feature_to_add_at_this_level)
+        
+        current_set_of_features.append(feature_to_add_at_this_level)
+        print(f'On level {i + 1} i added feature {feature_to_add_at_this_level + 1}')
+        return solution_set, accuracy
+
+def backward_elimination(data):
     current_set_of_features = []
     for i in range(data.shape[1] - 1):
         print(f'On the {i + 1}th level of the search tree')
         feature_to_add_at_this_level = None
         best_so_far_accuracy = 0
-        
         for k in range(data.shape[1] - 1):
             if not set(current_set_of_features).intersection({k}):
                 print(f'consider adding the {k + 1} feature')
@@ -100,6 +138,7 @@ def feature_search(data):
         
         current_set_of_features.append(feature_to_add_at_this_level)
         print(f'On level {i + 1} i added feature {feature_to_add_at_this_level + 1}')
+
 
 
 #run the main menu 
