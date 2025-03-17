@@ -29,20 +29,20 @@ def main():
     #test to make sure we are considering all features in our test 
     features = list(range(1, features))
     print(features)
-    all_features = leave_one_out_cross_validation(data, features, 0)
+    all_features = leave_one_out_cross_validation(data, features, -1)
     print(all_features)
     print('Running nearest neighbor with all features, using \"leaving-one-out\" evalutation, I get an accuracy of ' + str(all_features * 100) + '%')
-    if select_algo == 1:
-        subset, accuracy = forward_selection(data)
-    else:
-        subset, accuracy = backward_elimination(data)
-    print('Finished search!! The best feature subset is ' + str(subset) +  ' which has an accuracy of ' + str(accuracy * 100) + '%')
+    # if select_algo == 1:
+    #     subset, accuracy = forward_selection(data)
+    # else:
+    #     subset, accuracy = backward_elimination(data)
+    # print('Finished search!! The best feature subset is ' + str(subset) +  ' which has an accuracy of ' + str(accuracy * 100) + '%')
 
 #pseudocode from the slides 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
 
     #this is to make sure we add the new feature to our existing set 
-    if (feature_to_add != 0):
+    if (feature_to_add != -1):
         #we need to copy or else we permanently alter current_set and we cant run the original 
         current_set = current_set.copy() 
         current_set.append(feature_to_add)
@@ -50,14 +50,17 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
     number_correctly_classified = 0
     #shape tells us the number of rows in our data, basically we are looping for x # of rows 
     for i in range(data.shape[0]): 
-        object_to_classify = data[i, 1:]
+        features = len(current_set)
+        #Added to code to allow for proper scaling to features
+        object_to_classify = data[i, 1: features + 1]
         label_object_to_classify = data[i, 0]
         nearest_neighbor_distance = np.inf
         nearest_neighbor_location = np.inf
-        
+
         for k in range(data.shape[0]):
             if k != i:
-                distance = np.sqrt(np.sum((object_to_classify - data[k, 1:]) ** 2))
+                #Added to code to allow for proper scaling to features
+                distance = np.sqrt(np.sum((object_to_classify - data[k, 1: features + 1]) ** 2))
                 if distance < nearest_neighbor_distance:
                     nearest_neighbor_distance = distance
                     nearest_neighbor_location = k
@@ -101,18 +104,19 @@ def forward_selection(data):
     current_set_of_features = []
     solution_set = []
     accuracy = 0
+    for k in range(data.shape[1]):
+        current_set_of_features.append(k)
     for i in range(data.shape[1] - 1):
         print(f'On the {i + 1}th level of the search tree')
-        feature_to_add_at_this_level = None
+        feature_to_remove_at_this_level = None
         best_so_far_accuracy = 0
-        for k in range(data.shape[1] - 1):
-            if not set(current_set_of_features).intersection({k}):
-                print(f'consider adding the {k + 1} feature')
-                accuracy = leave_one_out_cross_validation(data, current_set_of_features, k + 1)
-                
-                if accuracy > best_so_far_accuracy:
-                    best_so_far_accuracy = accuracy
-                    feature_to_add_at_this_level = k
+        if not set(current_set_of_features).intersection({k}):
+            print(f'consider adding the {k + 1} feature')
+            accuracy = leave_one_out_cross_validation(data, current_set_of_features, k + 1)
+            print('Using feature(s) ' + str(current_set_of_features + [k]) + ' accuracy is ' + str(accuracy * 100) + '%')
+            if accuracy > best_so_far_accuracy:
+                best_so_far_accuracy = accuracy
+                feature_to_add_at_this_level = k
         if best_so_far_accuracy >= accuracy:
             accuracy = best_so_far_accuracy
             solution_set.append(feature_to_add_at_this_level)
@@ -123,22 +127,29 @@ def forward_selection(data):
 
 def backward_elimination(data):
     current_set_of_features = []
+    solution_set = []
+    accuracy = 0
     for i in range(data.shape[1] - 1):
         print(f'On the {i + 1}th level of the search tree')
-        feature_to_add_at_this_level = None
+        feature_to_remove_at_this_level = None
         best_so_far_accuracy = 0
         for k in range(data.shape[1] - 1):
-            if not set(current_set_of_features).intersection({k}):
-                print(f'consider adding the {k + 1} feature')
-                accuracy = leave_one_out_cross_validation(data, current_set_of_features, k + 1)
-                
-                if accuracy > best_so_far_accuracy:
-                    best_so_far_accuracy = accuracy
-                    feature_to_add_at_this_level = k
-        
-        current_set_of_features.append(feature_to_add_at_this_level)
-        print(f'On level {i + 1} i added feature {feature_to_add_at_this_level + 1}')
-
+            if set(current_set_of_features).intersection({k}):
+                print(f'consider removing the {k + 1} feature')
+                removed_feature = current_set_of_features.copy()
+                removed_feature.remove(k)
+                cross_accuracy = leave_one_out_cross_validation(data, current_set_of_features, -1)
+                print('Removing ' + str(k) + ' in features ' + str(current_set_of_features) + ' accuracy is ' + str(accuracy * 100) + '%')
+                if cross_accuracy > best_so_far_accuracy:
+                    best_so_far_accuracy = cross_accuracy
+                    solution_set = current_set_of_features.copy()
+                    feature_to_remove_at_this_level = k
+            if best_so_far_accuracy >= accuracy:
+                accuracy = best_so_far_accuracy
+                solution_set = current_set_of_features.copy()
+        current_set_of_features.remove(feature_to_remove_at_this_level)
+        print(f'On level {i + 1} i added feature {feature_to_remove_at_this_level + 1}')
+        return solution_set, accuracy
 
 
 #run the main menu 
