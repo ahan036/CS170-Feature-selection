@@ -31,7 +31,7 @@ def main():
     all_features = leave_one_out_cross_validation(data, features, -1)
 
     print(all_features)
-    print('Running nearest neighbor with all' + str(features) +  'features, using \"leaving-one-out\" evalutation, I get an accuracy of ' + str(all_features * 100) + '%')
+    print('Running nearest neighbor with all' + str(features) +  ' features, using \"leaving-one-out\" evalutation, I get an accuracy of ' + str(all_features * 100) + '%')
     
     if select_algo == 1:
         subset, accuracy = forward_selection(data)
