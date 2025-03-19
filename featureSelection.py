@@ -2,6 +2,8 @@ import numpy as np
 
 #for running the dataset while testing 
 #https://www.geeksforgeeks.org/find-the-number-of-rows-and-columns-of-a-given-matrix-using-numpy/
+
+'''
 def dataset(): 
     dataset = int(input('What dataset do u want? large = 1, small = 2'))
     print(dataset)
@@ -14,20 +16,27 @@ def dataset():
         dataset = 'CS170_Small_Data__49.txt' 
     data = np.loadtxt(dataset)
     return np.shape(data)[0], np.shape(data)[1], data
-
+'''
 #to choose the dataset and method 
 def main():
     print("Welcome to Ashley's Feature Selection Algorithm. \n")
-    # file_input = input("Type in the name of the file to test: ")
-    # print(file_input)
-    # data = np.genfromtxt(file_input)
+    file_input = input("Type in the name of the file to test: ")
+    print(file_input)
+    print('\n')
+    
+
     select_algo = int(input("Type the number of the algorithm you want to run. \n 1) Forward Selection \n 2) Backward Elimination \n"))
-    instances, features, data = dataset()
+    #instances, features, data = dataset()
+
+    data = np.loadtxt(file_input)
+    instances = np.shape(data)[0]
+    features = np.shape(data)[1]
+
     print('This dataset has ' + str(features - 1) + ' features (not including the class attribute), with ' + str(instances) + ' instances.\n') 
     features = list(range(1, features))  
     all_features = leave_one_out_cross_validation(data, features, -1)
     print('Running nearest neighbor with all features, using \"leaving-one-out\" evalutation, I get an accuracy of ' + str(all_features * 100) + '%')
-    
+    print('Beginning Search. \n')
     if select_algo == 1:
         subset, accuracy = forward_selection(data)
     else:
