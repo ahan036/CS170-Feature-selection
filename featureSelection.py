@@ -25,7 +25,7 @@ def main():
     instances, features, data = dataset()
 
     features = list(range(1, features))
-    print('This dataset has ' + str(features - 1) + ' features (not including the class attribute), with ' + str(instances) + ' instances.\n')
+    print('This dataset has ' + str(features) + ' features (not including the class attribute), with ' + str(instances) + ' instances.\n')
     #test to make sure we are considering all features in our test 
     print(features)
     all_features = leave_one_out_cross_validation(data, features, -1)
