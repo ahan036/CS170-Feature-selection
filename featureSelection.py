@@ -3,7 +3,7 @@ import numpy as np
 #for running the dataset while testing 
 #https://www.geeksforgeeks.org/find-the-number-of-rows-and-columns-of-a-given-matrix-using-numpy/
 
-'''
+
 def dataset(): 
     dataset = int(input('What dataset do u want? large = 1, small = 2'))
     print(dataset)
@@ -16,21 +16,22 @@ def dataset():
         dataset = 'CS170_Small_Data__49.txt' 
     data = np.loadtxt(dataset)
     return np.shape(data)[0], np.shape(data)[1], data
-'''
+
 #to choose the dataset and method 
 def main():
     print("Welcome to Ashley's Feature Selection Algorithm. \n")
-    file_input = input("Type in the name of the file to test: ")
-    print(file_input)
-    print('\n')
+    #file_input = input("Type in the name of the file to test: ")
+    #print(file_input)
+    #print('\n')
     
 
     select_algo = int(input("Type the number of the algorithm you want to run. \n 1) Forward Selection \n 2) Backward Elimination \n"))
-    #instances, features, data = dataset()
+    #temp for easy testing 
+    instances, features, data = dataset()
 
-    data = np.loadtxt(file_input)
-    instances = np.shape(data)[0]
-    features = np.shape(data)[1]
+    #data = np.loadtxt(file_input)
+    #instances = np.shape(data)[0]
+    #features = np.shape(data)[1]
 
     print('This dataset has ' + str(features - 1) + ' features (not including the class attribute), with ' + str(instances) + ' instances.\n') 
     features = list(range(1, features))  
@@ -64,7 +65,7 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
 
         for k in range(data.shape[0]):
             if k != i:
-                #Added to code to allow for proper scaling to features
+                #added to code to allow for proper scaling to features
                 distance = np.sqrt(np.sum((object_to_classify - data[k, current_set]) ** 2))
                 if distance < nearest_neighbor_distance:
                     nearest_neighbor_distance = distance
@@ -125,7 +126,7 @@ def forward_selection(data):
             solution_set.append(feature_to_add_at_this_level)
             print('Feature set ' + str(solution_set) + ' was best, accuracy is ' + str(solution_accuracy * 100) + '%')
         current_set_of_features.append(feature_to_add_at_this_level)
-        return solution_set, solution_accuracy
+    return solution_set, solution_accuracy
 
 def backward_elimination(data):
     current_set_of_features = []
@@ -141,9 +142,9 @@ def backward_elimination(data):
             removed_feature.remove(k)
             accuracy = leave_one_out_cross_validation(data, removed_feature, -1)
             print('Removing ' + str(k) + ' in features ' + str(current_set_of_features) + ' accuracy is ' + str(accuracy * 100) + '%')
-            if accuracy > best_so_far_accuracy:
+            if accuracy >= best_so_far_accuracy:
                 best_so_far_accuracy = accuracy
-                solution_set = current_set_of_features.copy()
+                #solution_set = current_set_of_features.copy()
                 feature_to_remove_at_this_level = k
         if best_so_far_accuracy >= solution_accuracy:
             solution_accuracy = best_so_far_accuracy
@@ -151,7 +152,8 @@ def backward_elimination(data):
         else: 
             pass 
         current_set_of_features.remove(feature_to_remove_at_this_level)
-        return solution_set, accuracy
+        print('Feature set ' + str(current_set_of_features) + ' was best, accuracy is ' + str(solution_accuracy * 100) + '%')
+    return solution_set, accuracy
 
 
 #run the main menu 
