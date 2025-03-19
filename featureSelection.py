@@ -76,6 +76,9 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
             number_correctly_classified += 1
     
     accuracy = number_correctly_classified / data.shape[0]
+    #not sure why my code always prints alot of random numbers.
+    #https://www.geeksforgeeks.org/how-to-round-numbers-in-python/
+    accuracy = round(accuracy, 1)
     return accuracy
 
 #data = our file 
@@ -146,12 +149,14 @@ def backward_elimination(data):
                 best_so_far_accuracy = accuracy
                 #solution_set = current_set_of_features.copy()
                 feature_to_remove_at_this_level = k
-        if best_so_far_accuracy >= solution_accuracy:
+                
+        if best_so_far_accuracy > solution_accuracy:
             solution_accuracy = best_so_far_accuracy
             solution_set = current_set_of_features.copy()
         else: 
-            pass 
+             pass 
         current_set_of_features.remove(feature_to_remove_at_this_level)
+
         print('Feature set ' + str(current_set_of_features) + ' was best, accuracy is ' + str(solution_accuracy * 100) + '%')
     return solution_set, accuracy
 
