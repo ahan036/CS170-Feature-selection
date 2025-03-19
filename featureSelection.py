@@ -1,10 +1,8 @@
 import numpy as np 
 
-#for running the dataset while testing 
+#for running the dataset while testing just for my convenience
 #https://www.geeksforgeeks.org/find-the-number-of-rows-and-columns-of-a-given-matrix-using-numpy/
-
-
-def dataset(): 
+'''def dataset(): 
     dataset = int(input('What dataset do u want? large = 1, small = 2'))
     print(dataset)
     if dataset == 1: 
@@ -15,23 +13,23 @@ def dataset():
         print ('Defaulting to small dataset')
         dataset = 'CS170_Small_Data__49.txt' 
     data = np.loadtxt(dataset)
-    return np.shape(data)[0], np.shape(data)[1], data
+    return np.shape(data)[0], np.shape(data)[1], data '''
 
 #to choose the dataset and method 
+#most of this is from the report guide, from the traceback code 
 def main():
     print("Welcome to Ashley's Feature Selection Algorithm. \n")
-    #file_input = input("Type in the name of the file to test: ")
-    #print(file_input)
-    #print('\n')
-    
+    file_input = input("Type in the name of the file to test: ")
+    print(file_input)
+    print('\n')
 
     select_algo = int(input("Type the number of the algorithm you want to run. \n 1) Forward Selection \n 2) Backward Elimination \n"))
     #temp for easy testing 
-    instances, features, data = dataset()
+    #instances, features, data = dataset()
 
-    #data = np.loadtxt(file_input)
-    #instances = np.shape(data)[0]
-    #features = np.shape(data)[1]
+    data = np.loadtxt(file_input)
+    instances = np.shape(data)[0]
+    features = np.shape(data)[1]
 
     print('This dataset has ' + str(features - 1) + ' features (not including the class attribute), with ' + str(instances) + ' instances.\n') 
     features = list(range(1, features))  
@@ -47,9 +45,9 @@ def main():
 #pseudocode from the slides 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
 
-    #this is to make sure we add the new feature to our existing set 
+    #this is to make sure we add the new feature to our existing set, if its -1 we reached the first column
     if (feature_to_add != -1):
-        #we need to copy or else we permanently alter current_set and we cant run the original 
+        #we need to copy or else we permanently alter current_set, bad practice 
         current_set = current_set.copy() 
         current_set.append(feature_to_add)
     
@@ -57,7 +55,6 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
     #shape tells us the number of rows in our data, basically we are looping for x # of rows 
     for i in range(data.shape[0]): 
         features = len(current_set)
-        #Added to code to allow for proper scaling to features
         object_to_classify = data[i, current_set]
         label_object_to_classify = data[i][0]
         nearest_neighbor_distance = np.inf
@@ -65,7 +62,6 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
 
         for k in range(data.shape[0]):
             if k != i:
-                #added to code to allow for proper scaling to features
                 distance = np.sqrt(np.sum((object_to_classify - data[k, current_set]) ** 2))
                 if distance < nearest_neighbor_distance:
                     nearest_neighbor_distance = distance
@@ -83,31 +79,7 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
 #data = our file 
 #current_set = the set of features we are selecting 
 #feature_to_add = the feature we might add, we have to test the accuracy first 
-#test our seach
-# def leave_one_out_cross_validation(data, current_set =None, feature_to_add=None):
-#     accuracy = np.random.rand() 
-#     return accuracy
-
-#more code from the slides : project_2 briefing
-#this will turn into our forward and backward search 
-# def feature_search(data):
-#     current_set_of_features = []
-#     for i in range(data.shape[1] - 1):
-#         print(f'On the {i + 1}th level of the search tree')
-#         feature_to_add_at_this_level = None
-#         best_so_far_accuracy = 0
-#         for k in range(data.shape[1] - 1):
-#             if not set(current_set_of_features).intersection({k}):
-#                 print(f'consider adding the {k + 1} feature')
-#                 accuracy = leave_one_out_cross_validation(data, current_set_of_features, k + 1)
-                
-#                 if accuracy > best_so_far_accuracy:
-#                     best_so_far_accuracy = accuracy
-#                     feature_to_add_at_this_level = k
-        
-#         current_set_of_features.append(feature_to_add_at_this_level)
-#         print(f'On level {i + 1} i added feature {feature_to_add_at_this_level + 1}')
-
+#forward and backward selection from the slides : project_2 briefing
 def forward_selection(data):
     current_set_of_features = []
     solution_set = []
@@ -158,14 +130,20 @@ def backward_elimination(data):
             solution_accuracy = best_so_far_accuracy
             current_set_of_features.remove(feature_to_remove_at_this_level)
             solution_set = current_set_of_features.copy()
-        #else: 
-             #pass 
-        #current_set_of_features.remove(feature_to_remove_at_this_level)
 
         print('Feature set ' + str(current_set_of_features) + ' was best, accuracy is ' + str(solution_accuracy) + '%')
     return solution_set, solution_accuracy
 
 
-#run the main menu 
+#run the main menu duhhh
 if __name__ == "__main__":
     main()
+
+
+#credit: 
+#HEAVILYYYY referenced the project 2 briefing slides and the matlab code provided
+# https://www.dropbox.com/scl/fo/blbkjaf1eyl94lij5wl2b/AAvNKn0YrnaX0oGPQn7ueFo?dl=0&e=1&preview=Project_2_Briefing.pptx&rlkey=alq2gb2ftsw73hcar4lk897r0
+# i didnt know how to read in the columns and rows from the file so i used
+#  https://www.geeksforgeeks.org/find-the-number-of-rows-and-columns-of-a-given-matrix-using-numpy/
+# had the same issue with overly complicated decimal so i used rounding 
+#https://www.geeksforgeeks.org/how-to-round-numbers-in-python/
