@@ -36,13 +36,13 @@ def main():
     print('This dataset has ' + str(features - 1) + ' features (not including the class attribute), with ' + str(instances) + ' instances.\n') 
     features = list(range(1, features))  
     all_features = leave_one_out_cross_validation(data, features, -1)
-    print('Running nearest neighbor with all features, using \"leaving-one-out\" evalutation, I get an accuracy of ' + str(all_features * 100) + '%')
+    print('Running nearest neighbor with all features, using \"leaving-one-out\" evalutation, I get an accuracy of ' + str(all_features) + '%')
     print('Beginning Search. \n')
     if select_algo == 1:
         subset, accuracy = forward_selection(data)
     else:
          subset, accuracy = backward_elimination(data)
-    print('Finished search!! The best feature subset is ' + str(subset) +  ' which has an accuracy of ' + str(accuracy * 100) + '%')
+    print('Finished search!! The best feature subset is ' + str(subset) +  ' which has an accuracy of ' + str(accuracy) + '%')
 
 #pseudocode from the slides 
 def leave_one_out_cross_validation(data, current_set, feature_to_add):
@@ -76,10 +76,9 @@ def leave_one_out_cross_validation(data, current_set, feature_to_add):
             number_correctly_classified += 1
     
     accuracy = number_correctly_classified / data.shape[0]
-    #not sure why my code always prints alot of random numbers.
+    #yay fixed my weird number issue 
     #https://www.geeksforgeeks.org/how-to-round-numbers-in-python/
-    accuracy = round(accuracy, 1)
-    return accuracy
+    return round(accuracy * 100, 1)
 
 #data = our file 
 #current_set = the set of features we are selecting 
@@ -120,14 +119,14 @@ def forward_selection(data):
         for k in range(1, data.shape[1]):
             if not set(current_set_of_features).intersection({k}):
                 accuracy = leave_one_out_cross_validation(data, current_set_of_features, k)
-                print('Using feature(s) ' + str(current_set_of_features + [k]) + ' accuracy is ' + str(accuracy * 100) + '%')
+                print('Using feature(s) ' + str(current_set_of_features + [k]) + ' accuracy is ' + str(accuracy) + '%')
                 if accuracy > best_so_far_accuracy:
                     best_so_far_accuracy = accuracy
                     feature_to_add_at_this_level = k
         if best_so_far_accuracy > solution_accuracy:
             solution_accuracy = best_so_far_accuracy
             solution_set.append(feature_to_add_at_this_level)
-            print('Feature set ' + str(solution_set) + ' was best, accuracy is ' + str(solution_accuracy * 100) + '%')
+            print('Feature set ' + str(solution_set) + ' was best, accuracy is ' + str(solution_accuracy) + '%')
         current_set_of_features.append(feature_to_add_at_this_level)
     return solution_set, solution_accuracy
 
@@ -144,7 +143,7 @@ def backward_elimination(data):
             removed_feature = current_set_of_features.copy()
             removed_feature.remove(k)
             accuracy = leave_one_out_cross_validation(data, removed_feature, -1)
-            print('Removing ' + str(k) + ' in features ' + str(current_set_of_features) + ' accuracy is ' + str(accuracy * 100) + '%')
+            print('Removing ' + str(k) + ' in features ' + str(current_set_of_features) + ' accuracy is ' + str(accuracy) + '%')
             if accuracy >= best_so_far_accuracy:
                 best_so_far_accuracy = accuracy
                 #solution_set = current_set_of_features.copy()
@@ -157,7 +156,7 @@ def backward_elimination(data):
              pass 
         current_set_of_features.remove(feature_to_remove_at_this_level)
 
-        print('Feature set ' + str(current_set_of_features) + ' was best, accuracy is ' + str(solution_accuracy * 100) + '%')
+        print('Feature set ' + str(current_set_of_features) + ' was best, accuracy is ' + str(solution_accuracy) + '%')
     return solution_set, accuracy
 
 
