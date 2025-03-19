@@ -144,20 +144,26 @@ def backward_elimination(data):
             removed_feature.remove(k)
             accuracy = leave_one_out_cross_validation(data, removed_feature, -1)
             print('Removing ' + str(k) + ' in features ' + str(current_set_of_features) + ' accuracy is ' + str(accuracy) + '%')
-            if accuracy >= best_so_far_accuracy:
+
+            #if current acc better than our best we change our local best, set the possible feature 
+            #to remove as our k 
+            if accuracy > best_so_far_accuracy:
                 best_so_far_accuracy = accuracy
                 #solution_set = current_set_of_features.copy()
                 feature_to_remove_at_this_level = k
-                
+
+        #if the accuracy is better than our solution acc, then we want the solution to stay the same 
+        # remove the item from the current set aand save the set as our new solution set         
         if best_so_far_accuracy > solution_accuracy:
             solution_accuracy = best_so_far_accuracy
+            current_set_of_features.remove(feature_to_remove_at_this_level)
             solution_set = current_set_of_features.copy()
-        else: 
-             pass 
-        current_set_of_features.remove(feature_to_remove_at_this_level)
+        #else: 
+             #pass 
+        #current_set_of_features.remove(feature_to_remove_at_this_level)
 
         print('Feature set ' + str(current_set_of_features) + ' was best, accuracy is ' + str(solution_accuracy) + '%')
-    return solution_set, accuracy
+    return solution_set, solution_accuracy
 
 
 #run the main menu 
